@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         MushScenario
-// @version      1.3
+// @version      1.3.1
 // @author       Ma c'hi (mush@machi.tel), corrections 1.2.15+ LAbare
 // @description  Modifications de Mush.vg pour parties scénarisées
 // @grant        GM_xmlhttpRequest
@@ -238,20 +238,14 @@ function ms_display_table(order_index, current_tab) {
 	for (cat in original) {
 		ordered[cat] = [];
 		for (key in original[cat]) {
-			ordered[cat].push([cat + '-' + key, entities_to_text(original[cat][key]), entities_to_text(scenar_data[cat + '_' + key])]);
+			var scenar_item = scenar_data[cat + '_' + key];
+			if (scenar_item == '') {
+				scenar_item = original[cat][key];
+			}
+			ordered[cat].push([cat + '-' + key, entities_to_text(original[cat][key]), entities_to_text(scenar_item)]);
 		}
 		ordered[cat].sort(function(a, b) {
-			if (a[order_index]) {
-				return a[order_index].localeCompare(b[order_index]);
-			}
-			else {
-				if (b[order_index]) {
-					return -1;
-				}
-				else {
-					return a[1].localeCompare(b[1]);
-				}
-			}
+			return a[order_index].localeCompare(b[order_index]);
 		});
 	}
 	$('<a>').attr('href', '#').text("noms originaux").css({
@@ -348,8 +342,8 @@ function ms_display_table(order_index, current_tab) {
 			}
 
 			var newtext = ordered[cat][j][2];
-			if (!newtext) {
-				newtext = "<i>Aucun</i>";
+			if (newtext == originaltext) {
+				newtext = "<i style='margin-left: 4px;'>" + newtext + "</i>";
 			}
 			$('<td>').html(newtext).css({
 				width: '50%', padding: '2px',
